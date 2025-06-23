@@ -1,141 +1,142 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2759
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Dynamic Inventory</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, button { padding: 8px; font-size: 16px; }
+    #searchInput { width: 100%; margin-bottom: 10px; }
+    .category-buttons button {
+      margin: 5px 5px 10px 0;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .category-buttons button:hover { background: #0056b3; }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 10px;
+    }
+    th, td {
+      padding: 10px; border: 1px solid #ccc; text-align: left;
+    }
+    th { background-color: #007BFF; color: white; }
+    img { width: 60px; }
+    #addButton {
+      margin-top: 10px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-  <meta charset="UTF-8" />\
-  <title>Inventory</title>\
-  <style>\
-    body \{ font-family: Arial, sans-serif; margin: 30px; \}\
-    #searchInput \{ width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; \}\
-\
-    .category-buttons \{ margin-bottom: 20px; \}\
-    .category-buttons button \{\
-      padding: 8px 14px; margin-right: 10px;\
-      background-color: #007BFF; border: none;\
-      color: white; border-radius: 4px; cursor: pointer;\
-    \}\
-    .category-buttons button:hover \{\
-      background-color: #0056b3;\
-    \}\
-\
-    table \{\
-      width: 100%; border-collapse: collapse;\
-      background-color: #fff;\
-    \}\
-    th, td \{\
-      padding: 10px; border: 1px solid #ccc;\
-      text-align: left;\
-    \}\
-    th \{ background-color: #007BFF; color: white; \}\
-    img \{ width: 60px; \}\
-\
-    #addButton \{\
-      margin-top: 10px;\
-      background-color: green;\
-      color: white;\
-      padding: 10px 15px;\
-      border: none;\
-      border-radius: 4px;\
-      cursor: pointer;\
-    \}\
-\
-    #addButton:hover \{\
-      background-color: darkgreen;\
-    \}\
-  </style>\
-</head>\
-<body>\
-\
-<h2>Inventory</h2>\
-\
-<input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search...">\
-\
-<div class="category-buttons">\
-  <button onclick="filterByCategory('')">All</button>\
-  <button onclick="filterByCategory('Food')">Food</button>\
-  <button onclick="filterByCategory('Drink')">Drink</button>\
-  <button onclick="filterByCategory('Supplies')">Supplies</button>\
-</div>\
-\
-<table id="inventoryTable">\
-  <thead>\
-    <tr>\
-      <th>Item ID</th>\
-      <th>Image</th>\
-      <th>Name</th>\
-      <th>Category</th>\
-      <th>Stock</th>\
-      <th>Location</th>\
-    </tr>\
-  </thead>\
-  <tbody>\
-    <tr>\
-      <td>BURGER123</td>\
-      <td><img src="https://via.placeholder.com/60?text=Burger" alt="Burger" /></td>\
-      <td>Classic Burger</td>\
-      <td>Food</td>\
-      <td>8</td>\
-      <td>Front Counter</td>\
-    </tr>\
-    <tr>\
-      <td>FRIES456</td>\
-      <td><img src="https://via.placeholder.com/60?text=Fries" alt="Fries" /></td>\
-      <td>French Fries</td>\
-      <td>Food</td>\
-      <td>20</td>\
-      <td>Kitchen</td>\
-    </tr>\
-  </tbody>\
-</table>\
-\
-<button id="addButton" onclick="addItem()">\uc0\u10133  Add Item</button>\
-\
-<script>\
-  function filterTable() \{\
-    const input = document.getElementById('searchInput').value.toLowerCase();\
-    const rows = document.querySelectorAll('#inventoryTable tbody tr');\
-    rows.forEach(row => \{\
-      const text = row.textContent.toLowerCase();\
-      row.style.display = text.includes(input) ? '' : 'none';\
-    \});\
-  \}\
-\
-  function filterByCategory(category) \{\
-    document.getElementById('searchInput').value = category;\
-    filterTable();\
-  \}\
-\
-  function addItem() \{\
-    const table = document.querySelector("#inventoryTable tbody");\
-    const newRow = document.createElement("tr");\
-    newRow.innerHTML = `\
-      <td>NEW$\{Date.now()\}</td>\
-      <td><img src="https://via.placeholder.com/60?text=New" alt="New Item" /></td>\
-      <td>New Item</td>\
-      <td>Food</td>\
-      <td>0</td>\
-      <td>New Location</td>\
-    `;\
-    table.appendChild(newRow);\
-  \}\
-\
-  window.onload = () => \{\
-    const params = new URLSearchParams(window.location.search);\
-    const search = params.get('search');\
-    if (search) \{\
-      document.getElementById('searchInput').value = search;\
-      filterTable();\
-    \}\
-  \};\
-</script>\
-\
-</body>\
-</html>\
-\
-}
+<h2>Inventory System</h2>
+<input type="text" id="searchInput" placeholder="Search items..." onkeyup="renderTable()">
+
+<div class="category-buttons">
+  <button onclick="filterCategory('')">All</button>
+  <button onclick="filterCategory('Food')">Food</button>
+  <button onclick="filterCategory('Drink')">Drink</button>
+  <button onclick="filterCategory('Supplies')">Supplies</button>
+</div>
+
+<table id="inventoryTable">
+  <thead>
+    <tr>
+      <th>Item ID</th>
+      <th>Image</th>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Stock</th>
+      <th>Location</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<button id="addButton" onclick="addItem()">➕ Add Item</button>
+
+<script>
+  let inventory = [
+    {
+      id: "BURGER123",
+      name: "Classic Burger",
+      category: "Food",
+      stock: 10,
+      location: "Front Counter",
+      image: "https://via.placeholder.com/60?text=Burger"
+    },
+    {
+      id: "FRIES456",
+      name: "French Fries",
+      category: "Food",
+      stock: 20,
+      location: "Kitchen",
+      image: "https://via.placeholder.com/60?text=Fries"
+    }
+  ];
+
+  let currentFilter = "";
+  let searchQuery = "";
+
+  function renderTable() {
+    const tbody = document.querySelector("#inventoryTable tbody");
+    tbody.innerHTML = "";
+
+    searchQuery = document.getElementById("searchInput").value.toLowerCase();
+
+    const filtered = inventory.filter(item => {
+      const text = `${item.id} ${item.name} ${item.category} ${item.location}`.toLowerCase();
+      return text.includes(searchQuery) && (currentFilter === "" || item.category === currentFilter);
+    });
+
+    filtered.forEach(item => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.id}</td>
+        <td><img src="${item.image}" alt="${item.name}" /></td>
+        <td>${item.name}</td>
+        <td>${item.category}</td>
+        <td>${item.stock}</td>
+        <td>${item.location}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function filterCategory(category) {
+    currentFilter = category;
+    renderTable();
+  }
+
+  function addItem() {
+    const newId = `ITEM${Date.now()}`;
+    inventory.push({
+      id: newId,
+      name: "New Item",
+      category: "Supplies",
+      stock: 0,
+      location: "Storage",
+      image: "https://via.placeholder.com/60?text=New"
+    });
+    renderTable();
+    alert(`New item added with ID: ${newId}\nUse ?search=${newId} in your link.`);
+  }
+
+  window.onload = () => {
+    const params = new URLSearchParams(window.location.search);
+    const search = params.get("search");
+    if (search) {
+      document.getElementById("searchInput").value = search;
+    }
+    renderTable();
+  };
+</script>
+
+</body>
+</html>
