@@ -59,7 +59,39 @@
   <tbody></tbody>
 </table>
 
-<button id="addButton" onclick="addItem()">➕ Add Item</button>
+<button id="addButton" onclick="addItem()">➕ Add Itemfunction saveNewItem() {
+  const name = document.getElementById("newName").value.trim();
+  const image = document.getElementById("newImage").value.trim() || "https://via.placeholder.com/60?text=No+Image";
+  const category = document.getElementById("newCategory").value;
+  const stock = parseInt(document.getElementById("newStock").value, 10) || 0;
+  const location = document.getElementById("newLocation").value.trim();
+  const id = "ITEM" + Date.now();
+
+  if (!name || !location) {
+    alert("Please enter both a name and location.");
+    return;
+  }
+
+  inventory.push({
+    id,
+    name,
+    image,
+    category,
+    stock,
+    location
+  });
+
+  // Reset form
+  document.getElementById("newName").value = "";
+  document.getElementById("newImage").value = "";
+  document.getElementById("newStock").value = 0;
+  document.getElementById("newLocation").value = "";
+  document.getElementById("addForm").style.display = "none";
+
+  renderTable();
+  alert("Item added! You can link to it using: ?search=" + id);
+}
+
 
 <script>
   let inventory = [
