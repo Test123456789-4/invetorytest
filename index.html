@@ -2,53 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Dynamic Inventory</title>
+  <title>Inventory</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input, button { padding: 8px; font-size: 16px; }
-    #searchInput { width: 100%; margin-bottom: 10px; }
-    .category-buttons button {
-      margin: 5px 5px 10px 0;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .category-buttons button:hover { background: #0056b3; }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 10px;
-    }
-    th, td {
-      padding: 10px; border: 1px solid #ccc; text-align: left;
-    }
-    th { background-color: #007BFF; color: white; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #searchInput { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { padding: 8px 12px; margin-right: 5px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background: #007BFF; color: white; }
     img { width: 60px; }
-    #addButton {
-      margin-top: 10px;
-      background-color: green;
-      color: white;
-      border: none;
-      border-radius: 4px;
+    #addForm input, #addForm select {
+      padding: 6px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #addForm label { font-weight: bold; }
+    #addForm {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
     }
   </style>
 </head>
 <body>
 
-<h2>Inventory System</h2>
-<input type="text" id="searchInput" placeholder="Search items..." onkeyup="renderTable()">
+<h2>Inventory</h2>
 
-<div class="category-buttons">
+<input type="text" id="searchInput" placeholder="Search..." oninput="renderTable()" />
+
+<div>
   <button onclick="filterCategory('')">All</button>
   <button onclick="filterCategory('Food')">Food</button>
   <button onclick="filterCategory('Drink')">Drink</button>
   <button onclick="filterCategory('Supplies')">Supplies</button>
 </div>
 
-<table id="inventoryTable">
+<table>
   <thead>
     <tr>
-      <th>Item ID</th>
+      <th>ID</th>
       <th>Image</th>
       <th>Name</th>
       <th>Category</th>
@@ -56,108 +50,122 @@
       <th>Location</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody id="inventoryBody"></tbody>
 </table>
 
-<button id="addButton" onclick="addItem()">➕ Add Itemfunction saveNewItem() {
-  const name = document.getElementById("newName").value.trim();
-  const image = document.getElementById("newImage").value.trim() || "https://via.placeholder.com/60?text=No+Image";
-  const category = document.getElementById("newCategory").value;
-  const stock = parseInt(document.getElementById("newStock").value, 10) || 0;
-  const location = document.getElementById("newLocation").value.trim();
-  const id = "ITEM" + Date.now();
+<!-- Add Item Button -->
+<button onclick="document.getElementById('addForm').style.display='block'" style="margin-top: 10px; background: green; color: white;">➕ Add Item</button>
 
-  if (!name || !location) {
-    alert("Please enter both a name and location.");
-    return;
-  }
+<!-- Add Item Form -->
+<div id="addForm" style="display:none;">
+  <h3>Add New Item</h3>
+  <label>Name:</label>
+  <input type="text" id="newName" placeholder="Item name" />
 
-  inventory.push({
-    id,
-    name,
-    image,
-    category,
-    stock,
-    location
-  });
+  <label>Image URL:</label>
+  <input type="text" id="newImage" placeholder="https://..." />
 
-  // Reset form
-  document.getElementById("newName").value = "";
-  document.getElementById("newImage").value = "";
-  document.getElementById("newStock").value = 0;
-  document.getElementById("newLocation").value = "";
-  document.getElementById("addForm").style.display = "none";
+  <label>Category:</label>
+  <select id="newCategory">
+    <option>Food</option>
+    <option>Drink</option>
+    <option>Supplies</option>
+  </select>
 
-  renderTable();
-  alert("Item added! You can link to it using: ?search=" + id);
-}
+  <label>Stock:</label>
+  <input type="number" id="newStock" value="0" />
 
+  <label>Location:</label>
+  <input type="text" id="newLocation" placeholder="Where is it stored?" />
+
+  <button onclick="saveNewItem()" style="background: #007BFF; color: white; margin-top: 10px;">Save Item</button>
+  <button onclick="document.getElementById('addForm').style.display='none'" style="margin-top: 10px; margin-left: 10px;">Cancel</button>
+</div>
 
 <script>
   let inventory = [
     {
       id: "BURGER123",
+      image: "https://via.placeholder.com/60?text=Burger",
       name: "Classic Burger",
       category: "Food",
       stock: 10,
-      location: "Front Counter",
-      image: "https://via.placeholder.com/60?text=Burger"
+      location: "Front Counter"
     },
     {
       id: "FRIES456",
+      image: "https://via.placeholder.com/60?text=Fries",
       name: "French Fries",
       category: "Food",
-      stock: 20,
-      location: "Kitchen",
-      image: "https://via.placeholder.com/60?text=Fries"
+      stock: 25,
+      location: "Kitchen"
     }
   ];
 
-  let currentFilter = "";
-  let searchQuery = "";
+  let currentCategory = "";
 
   function renderTable() {
-    const tbody = document.querySelector("#inventoryTable tbody");
-    tbody.innerHTML = "";
+    const body = document.getElementById("inventoryBody");
+    const searchValue = document.getElementById("searchInput").value.toLowerCase();
+    body.innerHTML = "";
 
-    searchQuery = document.getElementById("searchInput").value.toLowerCase();
-
-    const filtered = inventory.filter(item => {
-      const text = `${item.id} ${item.name} ${item.category} ${item.location}`.toLowerCase();
-      return text.includes(searchQuery) && (currentFilter === "" || item.category === currentFilter);
-    });
-
-    filtered.forEach(item => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${item.id}</td>
-        <td><img src="${item.image}" alt="${item.name}" /></td>
-        <td>${item.name}</td>
-        <td>${item.category}</td>
-        <td>${item.stock}</td>
-        <td>${item.location}</td>
-      `;
-      tbody.appendChild(row);
-    });
+    inventory
+      .filter(item =>
+        (!currentCategory || item.category === currentCategory) &&
+        Object.values(item).some(val =>
+          String(val).toLowerCase().includes(searchValue)
+        )
+      )
+      .forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td><img src="${item.image}" alt="${item.name}"></td>
+          <td>${item.name}</td>
+          <td>${item.category}</td>
+          <td>${item.stock}</td>
+          <td>${item.location}</td>
+        `;
+        body.appendChild(row);
+      });
   }
 
-  function filterCategory(category) {
-    currentFilter = category;
+  function filterCategory(cat) {
+    currentCategory = cat;
     renderTable();
   }
 
-  function addItem() {
-    const newId = `ITEM${Date.now()}`;
+  function saveNewItem() {
+    const name = document.getElementById("newName").value.trim();
+    const image = document.getElementById("newImage").value.trim() || "https://via.placeholder.com/60?text=No+Image";
+    const category = document.getElementById("newCategory").value;
+    const stock = parseInt(document.getElementById("newStock").value, 10) || 0;
+    const location = document.getElementById("newLocation").value.trim();
+    const id = "ITEM" + Date.now();
+
+    if (!name || !location) {
+      alert("Please enter both a name and location.");
+      return;
+    }
+
     inventory.push({
-      id: newId,
-      name: "New Item",
-      category: "Supplies",
-      stock: 0,
-      location: "Storage",
-      image: "https://via.placeholder.com/60?text=New"
+      id,
+      name,
+      image,
+      category,
+      stock,
+      location
     });
+
+    // Reset form
+    document.getElementById("newName").value = "";
+    document.getElementById("newImage").value = "";
+    document.getElementById("newStock").value = 0;
+    document.getElementById("newLocation").value = "";
+    document.getElementById("addForm").style.display = "none";
+
     renderTable();
-    alert(`New item added with ID: ${newId}\nUse ?search=${newId} in your link.`);
+    alert("Item added! You can link to it using: ?search=" + id);
   }
 
   window.onload = () => {
